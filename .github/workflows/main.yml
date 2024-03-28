@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: my-executable
-          path: ./target/debug/*.exe
+          path: ./target/debug/hello
 
   execute:
     needs: build
