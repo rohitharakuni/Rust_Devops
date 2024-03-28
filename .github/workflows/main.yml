@@ -2,9 +2,10 @@ name: Rust DevOps Pipeline
 
 on:
   schedule:
-    - cron: "33 6 * * *"  # Every day at 11:55 AM UTC
-      branches:
-        - main
+    - cron: "40 6 * * *"  # Every day at 11:55 AM UTC
+  push:
+    branches:
+      - main
 
 jobs:
   build:
