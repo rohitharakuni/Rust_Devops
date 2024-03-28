@@ -2,7 +2,7 @@ name: Rust DevOps Pipeline
 
 on:
   schedule:
-    - cron: "25 11 * * 4"  # Every Thursday at 11:25 AM
+    - cron: "0 6 * * 4"  # Every Thursday at 11:25 AM
 
 jobs:
   build:
