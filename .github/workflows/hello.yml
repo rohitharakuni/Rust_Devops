@@ -1,0 +1,23 @@
+name: Rust DevOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Set up Rust
+      uses: actions/setup-rust@v1
+    
+    - name: Build
+      run: cargo build
+    
+    - name: Run executable
+      run: ./target/debug/hello
