@@ -1,6 +1,8 @@
-name: Rust CI
+name: Rust DevOps Pipeline
 
 on:
+  schedule:
+    - cron: "0 0 * * *"  # Every day at
   push:
     branches:
       - main
@@ -10,16 +12,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Rust
-        uses: actions/setup-rust@v1
-        with:
-          rust-version: 'stable'
-
-      - name: Check out code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build project
+      - name: Build Rust project
         run: cargo build
 
-      - name: Run tests
-        run: cargo test
+      - name: Run executable
+        run: ./target/debug/hello
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-executable
+          path: ./target/debug/hello
+
+  execute:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2    #checks out the source code repo into the workflows workspace.
+                                     #it fetches the repo content and makes it avail to subsequent steps in the workflow
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: my-executable
+          path: ./target/debug/
+
+      - name: Run executable
+        run: |
+          chmod +x ./target/debug/hello
+          ./target/debug/hello
+
