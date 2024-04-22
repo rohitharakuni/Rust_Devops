@@ -1,21 +1,25 @@
-trigger:
-  branches:
-    include:
-      - main  # Trigger the pipeline on changes to the main branch
+name: Rust CI
 
-pool:
-  vmImage: 'ubuntu-latest'  # Use Ubuntu agent for building
+on:
+  push:
+    branches:
+      - main
 
-steps:
-  - script: |
-      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y  # Install Rust
-      source $HOME/.cargo/env  # Add Cargo to the PATH
-    displayName: 'Install Rust'
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-  - script: |
-      cargo build --verbose  # Build the Rust project
-    displayName: 'Build'
+    steps:
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: 'stable'
 
-  - script: |
-      cargo test --verbose  # Run tests
-    displayName: 'Run Tests'
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build project
+        run: cargo build
+
+      - name: Run tests
+        run: cargo test
