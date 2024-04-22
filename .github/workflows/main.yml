@@ -1,5 +1,7 @@
 trigger:
-  - main  # Trigger the pipeline on changes to the main branch
+  branches:
+    include:
+      - main  # Trigger the pipeline on changes to the main branch
 
 pool:
   vmImage: 'ubuntu-latest'  # Use Ubuntu agent for building
