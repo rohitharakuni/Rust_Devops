@@ -1,49 +1,19 @@
-name: Rust DevOps Pipeline
+trigger:
+  - main  # Trigger the pipeline on changes to the main branch
 
-on:
-  schedule:
-    - cron: "0 0 * * *"  # Every day at
-  push:
-    branches:
-      - main
+pool:
+  vmImage: 'ubuntu-latest'  # Use Ubuntu agent for building
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+steps:
+  - script: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y  # Install Rust
+      source $HOME/.cargo/env  # Add Cargo to the PATH
+    displayName: 'Install Rust'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  - script: |
+      cargo build --verbose  # Build the Rust project
+    displayName: 'Build'
 
-      - name: Build Rust project
-        run: cargo build
-
-      - name: Run executable
-        run: ./target/debug/hello
-
-      - name: Publish artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: my-executable
-          path: ./target/debug/hello
-
-  execute:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2    #checks out the source code repo into the workflows workspace.
-                                     #it fetches the repo content and makes it avail to subsequent steps in the workflow
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: my-executable
-          path: ./target/debug/
-
-      - name: Run executable
-        run: |
-          chmod +x ./target/debug/hello
-          ./target/debug/hello
-
+  - script: |
+      cargo test --verbose  # Run tests
+    displayName: 'Run Tests'
