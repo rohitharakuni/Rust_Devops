@@ -22,3 +22,6 @@ jobs:
 
       - name: Build Rust Code
         run: cargo build --verbose
+
+      - name: Run Executable
+        run: .\target\debug\hello  # Replace `your_executable_name` with the actual name of your executable
