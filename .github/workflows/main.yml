@@ -8,10 +8,12 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
 
     steps:
       - name: Install Rust
-        working-directory: ${{ github.workspace }}
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -19,11 +21,9 @@ jobs:
         shell: bash  # Use bash shell for running the script
 
       - name: Build Rust Code
-        working-directory: ${{ github.workspace }}
         run: cargo build --verbose
 
       - name: Run Tests and Reject PR if Fails
-        working-directory: ${{ github.workspace }}
         run: |
           cargo test --verbose
           test_result=$?
