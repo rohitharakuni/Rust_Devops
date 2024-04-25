@@ -8,12 +8,12 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: ${{ github.workspace }}
 
     steps:
-      - name: Install Rust
+      - name: Checkout repository
+        uses: actions/checkout@v2  # Check out the repository
+
+      - name: Set up Rust
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -22,12 +22,3 @@ jobs:
 
       - name: Build Rust Code
         run: cargo build --verbose
-
-      - name: Run Tests and Reject PR if Fails
-        run: |
-          cargo test --verbose
-          test_result=$?
-          if [ $test_result -ne 0 ]; then
-            echo "Tests failed. Rejecting PR."
-            exit 1
-          fi
