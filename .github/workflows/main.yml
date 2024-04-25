@@ -1,49 +1,30 @@
 name: Rust DevOps Pipeline
 
 on:
-  schedule:
-    - cron: "0 0 * * *"  # Every day at
   push:
     branches:
-      - main
+      - main  # Trigger the pipeline on changes to the main branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build Rust project
-        run: cargo build
-
-      - name: Run executable
-        run: ./target/debug/hello
-
-      - name: Publish artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: my-executable
-          path: ./target/debug/hello
-
-  execute:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2    #checks out the source code repo into the workflows workspace.
-                                     #it fetches the repo content and makes it avail to subsequent steps in the workflow
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: my-executable
-          path: ./target/debug/
-
-      - name: Run executable
+      - name: Install Rust
         run: |
-          chmod +x ./target/debug/hello
-          ./target/debug/hello
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          export PATH="$HOME/.cargo/bin:$PATH"
+          cargo install cargo-tree
+        shell: bash  # Use bash shell for running the script
 
+      - name: Build Rust Code
+        run: cargo build --verbose
+
+      - name: Run Tests and Reject PR if Fails
+        run: |
+          cargo test --verbose
+          test_result=$?
+          if [ $test_result -ne 0 ]; then
+            echo "Tests failed. Rejecting PR."
+            exit 1
+          fi
